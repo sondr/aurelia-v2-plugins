@@ -1,26 +1,26 @@
-import { HttpClient, HttpClientConfiguration } from '@aurelia/fetch-client';
+import { newInstanceOf, IContainer } from '@aurelia/kernel';
+import { HttpClientConfiguration, IHttpClient } from '@aurelia/fetch-client';
 import { ResponseType, ResponseParser, IRestFetchOptions, HttpMethods, IRestRequestData, responseParsers } from './interfaces';
 import { buildUrl } from './utilities';
 
-//export type ApiEndpointClientConfig = RequestInit | ((config: HttpClientConfiguration) => HttpClientConfiguration) | HttpClientConfiguration;
-export type ApiEndpointClientConfig = ((config: HttpClientConfiguration) => HttpClientConfiguration);
-
+//export type ApiEndpointClientConfig = ((config: HttpClientConfiguration) => HttpClientConfiguration);
+export type ApiEndpointClientConfig = ((config: HttpClientConfiguration) => void);
 
 export class ApiEndpoint {
-    public readonly client: HttpClient;
-    public parser?: ResponseType<any>;
+    public readonly client: IHttpClient;
+    public parser?: ResponseType<unknown>;
 
     constructor(
+        readonly container: IContainer,
         config: ApiEndpointClientConfig,
-        parser: ResponseParser<any> = 'json'
+        parser: ResponseParser<unknown> = 'json'
     ) {
-        this.client = new HttpClient();
-        this.client.configure(config);
-
+        this.client = this.container.get(newInstanceOf(IHttpClient));
+        this.client?.configure(config);
         this.setParser(parser);
     }
 
-    public setParser(parser: ResponseParser<any>) {
+    public setParser(parser: ResponseParser<unknown>) {
         this.parser = this.findParser(parser);
     }
 
@@ -66,7 +66,7 @@ export class ApiEndpoint {
     }
 
     private findParser<T>(override?: ResponseParser<T>): ResponseType<T> | undefined {
-        let parseReturn = override ?? this.parser;
+        const parseReturn = override ?? this.parser;
         let parser: ResponseType<T> | undefined;
         if (parseReturn) {
             const type = typeof parseReturn;
@@ -81,5 +81,9 @@ export class ApiEndpoint {
         return parser;
     }
 
+
+    dispose(){
+        this.client?.dispose();
+    }
 }
 

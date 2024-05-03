@@ -8,13 +8,13 @@ export function buildUrl(resource: string, queryParams?: object) {
     return resource + appendEnd;
 }
 
-export function buildQueryParameters(params: Object, prefix: string = ''): string {
+export function buildQueryParameters(params: object, prefix: string = ''): string {
     const queryParts: string[] = [];
 
     for (const key in params) {
-        if (params.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(params, key)) {
             const value = params[key];
-            let fullKey = prefix ? `${prefix}[${encodeURIComponent(key)}]` : encodeURIComponent(key);
+            const fullKey = prefix ? `${prefix}[${encodeURIComponent(key)}]` : encodeURIComponent(key);
 
             if (value !== null && typeof value === "object") {
                 // Recursive call for nested objects

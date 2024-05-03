@@ -4,7 +4,8 @@ import { apiConfiguration } from 'aurelia2-simple-api';
 import { MyApp } from './my-app';
 
 export enum EndPoints {
-  github = 'github'
+  github = 'github',
+  counties = 'counties',
 }
 
 Aurelia
@@ -17,17 +18,10 @@ Aurelia
     apiConfiguration.setup(cfg => {
       cfg.registerEndpoint(EndPoints.github, config => {
         config.baseUrl = 'https://api.github.com';
-        return config;
+      }).registerEndpoint(EndPoints.counties, config => {
+        config.baseUrl = 'https://api.kartverket.no/kommuneinfo/v1/';
       });
     })
-    // apiConfiguration.setup(cfg => {
-    //   cfg.registerEndpoint(EndPoints.github, {
-    //     baseUrl: 'https://api.github.com',
-    //     headers: {
-    //       'Accept': 'application/json'
-    //     }
-    //   });
-    // })
   )
   .app(MyApp)
   .start();
