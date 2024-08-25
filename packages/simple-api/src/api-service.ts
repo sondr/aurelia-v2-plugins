@@ -2,9 +2,9 @@ import { DI, IContainer } from "@aurelia/kernel";
 import { ApiEndpoint, ApiEndpointClientConfig } from "./api-endpoint";
 import { ResponseParser } from "./interfaces";
 
-type IApiContainer = ApiContainer;
-export const IApiContainer = DI.createInterface<IApiContainer>(x => x.singleton(ApiContainer));
-export class ApiContainer {
+type IApiService = ApiService;
+export const IApiService = DI.createInterface<IApiService>(x => x.singleton(ApiService));
+export class ApiService {
     private defaultEndpoint: string;
     private readonly endpoints: { [name: string]: ApiEndpoint } = {};
 

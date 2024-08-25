@@ -1,19 +1,19 @@
 import { IContainer, IRegistry } from '@aurelia/kernel';
-import { ApiContainer, IApiContainer } from './api-container';
+import { ApiService, IApiService } from './api-service';
 import { IRestFetchOptions, IRestRequestData } from './interfaces';
 
 const defaultComponents: IRegistry[] = [
-    IApiContainer as unknown as IRegistry
+    IApiService as unknown as IRegistry
 ];
 
 interface IApiRegistry extends IRegistry {
-    setup(config: (apiContainer: ApiContainer) => void): IApiRegistry;
+    setup(config: (apiContainer: ApiService) => void): IApiRegistry;
 }
 
-function createConfiguration(config?: (apiContainer: ApiContainer) => void): IApiRegistry {
+function createConfiguration(config?: (apiServiceOptions: ApiService) => void): IApiRegistry {
     return {
         register(container: IContainer) {            
-            const instance = container.get(IApiContainer);
+            const instance = container.get(IApiService);
             instance.setContainer(container);
             if (config) {
                 config(instance);
@@ -31,7 +31,7 @@ function createConfiguration(config?: (apiContainer: ApiContainer) => void): IAp
 export const apiConfiguration = createConfiguration();
 
 export {
-    IApiContainer,
+    IApiService as IApiContainer,
     IRestFetchOptions,
     IRestRequestData
 }

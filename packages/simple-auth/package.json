@@ -1,5 +1,5 @@
 {
-    "name": "aurelia-simple-api",
+    "name": "aurelia-simple-auth",
     "version": "0.0.1",
     "description": "",
     "main": "./dist/index.js",

@@ -1,5 +1,5 @@
 {
-    "name": "aurelia-simple-api",
+    "name": "aurelia-api-tokens",
     "version": "0.0.1",
     "description": "",
     "main": "./dist/index.js",
