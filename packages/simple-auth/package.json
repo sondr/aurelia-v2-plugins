@@ -1,5 +1,5 @@
 {
-    "name": "aurelia-simple-auth",
+    "name": "aurelia2-simple-auth",
     "version": "0.0.1",
     "description": "",
     "main": "./dist/index.js",
@@ -21,6 +21,6 @@
     },
     "devDependencies": {},
     "peerDependencies": {
-        "aurelia": "2.0.0-beta.15"
+        "aurelia": "2.0.0-beta.21"
     }
 }

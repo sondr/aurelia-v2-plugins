@@ -1,23 +1,23 @@
 {
-    "name": "@sondr/aurelia-v2-plugins",
+    "name": "@sondr/au2-plugins",
     "version": "0.0.1",
     "description": "A collection of Aurelia 2 plugins",
     "repository": "https://github.com/sondr/aurelia-v2-plugins",
-    "author": "Sondre T. Ernoe",
     "license": "MIT",
-    "scripts": {
-        "build": "npm run build --workspaces"
-    },
+    "author": "Sondre T. Ernoe",
     "workspaces": [
         "packages/*",
         "examples/*"
     ],
+    "scripts": {
+        "build": "npm run build --workspaces"
+    },
     "devDependencies": {
-        "@aurelia/testing": "2.0.0-beta.15",
-        "@aurelia/router": "2.0.0-beta.15",
+        "@aurelia/router": "2.0.0-beta.21",
+        "@aurelia/testing": "2.0.0-beta.21",
         "@typescript-eslint/eslint-plugin": "^7.8.0",
         "@typescript-eslint/parser": "^7.8.0",
-        "aurelia": "2.0.0-beta.15",
+        "aurelia": "2.0.0-beta.21",
         "cpx2": "^7.0.1",
         "cross-env": "^7.0.3",
         "eslint": "^8.24.0",

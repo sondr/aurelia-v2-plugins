@@ -11,13 +11,13 @@
     "aurelia2-simple-api": "0.0.1"
   },
   "devDependencies": {
-    "@aurelia/testing": "2.0.0-beta.15",
-    "@aurelia/webpack-loader": "2.0.0-beta.15",
-    "@aurelia/ts-jest": "2.0.0-beta.15",
+    "@aurelia/testing": "2.0.0-beta.21",
+    "@aurelia/webpack-loader": "2.0.0-beta.21",
+    "@aurelia/ts-jest": "2.0.0-beta.21",
     "@typescript-eslint/eslint-plugin": "^7.8.0",
     "@typescript-eslint/parser": "^7.8.0",
     "@types/jest": "^28.1.1",
-    "aurelia": "2.0.0-beta.15",
+    "aurelia": "2.0.0-beta.21",
     "eslint": "^8.17.0",
     "htmlhint": "^1.1.4",
     "webpack": "^5.91.0",
