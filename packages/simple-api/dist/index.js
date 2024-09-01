@@ -1,3 +1,4 @@
+import { streamParsers } from './parsers/stream-parsers';
 import { IApiService } from './api-service';
 const defaultComponents = [
     IApiService
@@ -19,5 +20,5 @@ function createConfiguration(config) {
     };
 }
 export const apiConfiguration = createConfiguration();
-export { IApiService as IApiContainer };
+export { IApiService as IApiContainer, streamParsers as streamParses };
 //# sourceMappingURL=index.js.map

@@ -1,14 +1,14 @@
 {
   "name": "plugins-demo",
   "description": "Examples of plugins",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "???"
   },
   "license": "MIT",
   "dependencies": {
-    "aurelia2-simple-api": "0.0.1"
+    "aurelia2-simple-api": "0.0.2"
   },
   "devDependencies": {
     "@aurelia/testing": "2.0.0-beta.21",

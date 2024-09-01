@@ -1,6 +1,6 @@
 import { DI, IContainer } from "@aurelia/kernel";
 import { ApiEndpoint, ApiEndpointClientConfig } from "./api-endpoint";
-import { ResponseParser } from "./interfaces";
+import { ResponseParser } from "./parsers/response-parsers";
 
 type IApiService = ApiService;
 export const IApiService = DI.createInterface<IApiService>(x => x.singleton(ApiService));

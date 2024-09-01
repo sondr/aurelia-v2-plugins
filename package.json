@@ -1,6 +1,6 @@
 {
     "name": "@sondr/au2-plugins",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "A collection of Aurelia 2 plugins",
     "repository": "https://github.com/sondr/aurelia-v2-plugins",
     "license": "MIT",

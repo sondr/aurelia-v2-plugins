@@ -1,3 +1,4 @@
+import { streamParsers } from './parsers/stream-parsers';
 import { IContainer, IRegistry } from '@aurelia/kernel';
 import { ApiService, IApiService } from './api-service';
 import { IRestFetchOptions, IRestRequestData } from './interfaces';
@@ -33,5 +34,6 @@ export const apiConfiguration = createConfiguration();
 export {
     IApiService as IApiContainer,
     IRestFetchOptions,
-    IRestRequestData
+    IRestRequestData,
+    streamParsers as streamParses
 }

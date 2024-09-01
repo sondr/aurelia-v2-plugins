@@ -1,7 +1,9 @@
 import { newInstanceOf, IContainer } from '@aurelia/kernel';
 import { HttpClientConfiguration, IHttpClient } from '@aurelia/fetch-client';
-import { ResponseType, ResponseParser, IRestFetchOptions, HttpMethods, IRestRequestData, responseParsers } from './interfaces';
+import { IRestFetchOptions, HttpMethods, IRestRequestData } from './interfaces';
+import { ResponseParser, ResponseType, responseParsers } from './parsers/response-parsers';
 import { buildUrl } from './utilities';
+import { streamParsers } from './parsers/stream-parsers';
 
 //export type ApiEndpointClientConfig = ((config: HttpClientConfiguration) => HttpClientConfiguration);
 export type ApiEndpointClientConfig = ((config: HttpClientConfiguration) => void);
@@ -45,14 +47,20 @@ export class ApiEndpoint {
         if (options?.beforeSend) { options.beforeSend(requestData); }
         const request = this.client.fetch(requestData.resource, requestData.request);
 
+        const response = await request;
 
-        const beforeReturn = this.findParser<T>(options?.beforeReturn);
-        if (!beforeReturn) {
-            return request;
+        const onStreamChunck = options?.stream?.onChunk;
+        if (onStreamChunck) {
+            const streamParser = options?.stream?.parser ?? streamParsers.default;
+            await streamParser(response, onStreamChunck);
         }
 
-        const response = await request;
-        return beforeReturn!(response);
+        const responseParser = this.findParser<T>(options?.responseParser);
+        if (!responseParser) {
+            return response;
+        }
+
+        return responseParser!(response);
     }
 
     private buildRequest<T>(method: HttpMethods, resource: string, options?: IRestFetchOptions<T>): IRestRequestData {
@@ -82,7 +90,7 @@ export class ApiEndpoint {
     }
 
 
-    dispose(){
+    dispose() {
         this.client?.dispose();
     }
 }

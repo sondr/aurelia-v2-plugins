@@ -1,6 +1,6 @@
 import { IContainer } from "@aurelia/kernel";
 import { ApiEndpoint, ApiEndpointClientConfig } from "./api-endpoint";
-import { ResponseParser } from "./interfaces";
+import { ResponseParser } from "./parsers/response-parsers";
 export declare const IApiService: import("@aurelia/kernel").InterfaceSymbol<ApiService>;
 export declare class ApiService {
     private defaultEndpoint;

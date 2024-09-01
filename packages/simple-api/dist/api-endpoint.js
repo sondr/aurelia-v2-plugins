@@ -1,7 +1,8 @@
 import { newInstanceOf } from '@aurelia/kernel';
 import { IHttpClient } from '@aurelia/fetch-client';
-import { responseParsers } from './interfaces';
+import { responseParsers } from './parsers/response-parsers';
 import { buildUrl } from './utilities';
+import { streamParsers } from './parsers/stream-parsers';
 export class ApiEndpoint {
     constructor(container, config, parser = 'json') {
         this.container = container;
@@ -33,12 +34,17 @@ export class ApiEndpoint {
             options.beforeSend(requestData);
         }
         const request = this.client.fetch(requestData.resource, requestData.request);
-        const beforeReturn = this.findParser(options?.beforeReturn);
-        if (!beforeReturn) {
-            return request;
-        }
         const response = await request;
-        return beforeReturn(response);
+        const onStreamChunck = options?.stream?.onChunk;
+        if (onStreamChunck) {
+            const streamParser = options?.stream?.parser ?? streamParsers.default;
+            await streamParser(response, onStreamChunck);
+        }
+        const responseParser = this.findParser(options?.responseParser);
+        if (!responseParser) {
+            return response;
+        }
+        return responseParser(response);
     }
     buildRequest(method, resource, options) {
         const request = this.client?.defaults ? structuredClone(this.client.defaults) : {};

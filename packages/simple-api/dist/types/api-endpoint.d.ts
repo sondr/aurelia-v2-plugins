@@ -1,6 +1,7 @@
 import { IContainer } from '@aurelia/kernel';
 import { HttpClientConfiguration, IHttpClient } from '@aurelia/fetch-client';
-import { ResponseType, ResponseParser, IRestFetchOptions } from './interfaces';
+import { IRestFetchOptions } from './interfaces';
+import { ResponseParser, ResponseType } from './parsers/response-parsers';
 export type ApiEndpointClientConfig = ((config: HttpClientConfiguration) => void);
 export declare class ApiEndpoint {
     readonly container: IContainer;

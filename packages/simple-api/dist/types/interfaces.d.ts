@@ -1,24 +1,20 @@
+import { ResponseParser } from "./parsers/response-parsers";
+import { StreamParser } from "./parsers/stream-parsers";
+export type HttpMethods = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'CONNECT' | 'OPTIONS' | 'TRACE' | string & {};
 export interface IRestFetchOptions<T> {
     query?: Object;
     body?: any;
     headers?: HeadersInit;
     beforeSend?: (request: IRestRequestData) => void;
-    beforeReturn?: ResponseParser<T>;
+    responseParser?: ResponseParser<T>;
+    stream?: IRestStreamOption<T>;
+}
+export interface IRestStreamOption<T> {
+    parser?: StreamParser<T>;
+    onChunk: (chunk: T) => void;
 }
 export interface IRestRequestData {
     resource: string;
     request: RequestInit;
 }
-export type HttpMethods = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' | 'CONNECT' | 'OPTIONS' | 'TRACE' | string & {};
-export type ResponseType<T> = (response: Response) => Promise<T>;
-export interface IResponseParsers {
-    disable: undefined;
-    text: ResponseType<string>;
-    json: ResponseType<any>;
-    blob: ResponseType<Blob>;
-    formData: ResponseType<FormData>;
-}
-export declare const responseParsers: IResponseParsers;
-export declare const parserKeys: string[];
-export type ResponseParser<T> = (keyof typeof responseParsers) | undefined | ResponseType<T> | 'disable';
 //# sourceMappingURL=interfaces.d.ts.map

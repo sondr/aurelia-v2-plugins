@@ -4,7 +4,7 @@ import { resolve } from 'aurelia';
 
 import { HomePage } from './routes/home';
 import { NextRoute } from './routes/next';
-import { IApiContainer } from 'aurelia2-simple-api';
+import { IApiContainer, streamParses } from 'aurelia2-simple-api';
 import { EndPoints } from './main';
 
 // @routes([
@@ -21,7 +21,7 @@ import { EndPoints } from './main';
 //   }
 // ])
 export class MyApp {
-  private readonly githubApi  = resolve(IApiContainer).getEndpoint(EndPoints.github);
+  private readonly githubApi = resolve(IApiContainer).getEndpoint(EndPoints.github);
   private readonly mapApi = resolve(IApiContainer).getEndpoint(EndPoints.counties);
 
   async fetch() {
@@ -32,12 +32,21 @@ export class MyApp {
     // const ghEndpoint = this.apiContainer.getEndpoint(EndPoints.github);
     // const mapEndpoint = this.apiContainer.getEndpoint(EndPoints.counties);
 
+    this.mapApi.get('', {
+      stream: {
+        parser: streamParses.default,
+        onChunk: (chunk) => {
+          console.log(chunk);
+        }
+      }
+    });
+
     const users = await this.githubApi.get('/users/aurelia');
     const counties = await this.mapApi.get('/fylkerkommuner');
 
-    
+
     console.log(users);
     console.log(counties);
-}
+  }
 
 }
