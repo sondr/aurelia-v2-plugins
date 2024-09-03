@@ -1,6 +1,6 @@
 import { DI, IContainer } from "@aurelia/kernel";
 import { ApiEndpoint, ApiEndpointClientConfig } from "./api-endpoint";
-import { ResponseParser } from "./parsers/response-parsers";
+import { StreamParser } from "./parsers/stream-parsers";
 
 const empty = 'empty-json';
 
@@ -32,12 +32,12 @@ export class ApiService {
         return this.getEndpoint(empty);
     };
 
-    public registerEndpoint(name: string, clientConfig: ApiEndpointClientConfig, parser?: ResponseParser<unknown>) {
+    public registerEndpoint(name: string, clientConfig: ApiEndpointClientConfig, defaultStreamParser?: StreamParser<unknown>) {
         if (this.exists(name)) {
             throw new Error(`Endpoint ${name} already exists`);
         }
 
-        this.endpoints[name] = new ApiEndpoint(this.container, clientConfig, parser);
+        this.endpoints[name] = new ApiEndpoint(this.container, clientConfig);
 
         return this;
     }

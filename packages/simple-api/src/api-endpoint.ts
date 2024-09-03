@@ -1,9 +1,13 @@
 import { newInstanceOf, IContainer } from '@aurelia/kernel';
 import { HttpClientConfiguration, IHttpClient } from '@aurelia/fetch-client';
 import { IRestFetchOptions as IApiRequestOptions, HttpMethods, IRestRequestData as IApiRequestData, IRestFetchRequestOptions as IApiFullRequestOptions, RequestBody } from './interfaces';
-import { ResponseParser, ResponseType, responseParsers } from './parsers/response-parsers';
 import { buildUrl } from './utilities';
-import { streamParsers } from './parsers/stream-parsers';
+import { StreamParser, StreamParserType, streamParsers } from './parsers/stream-parsers';
+
+
+const findStreamParser = <T>(sp: StreamParser<T> = null) => {
+
+};
 
 
 const prepareRequestBody = (body: BodyInit | null | undefined, convertToJson = true) =>
@@ -12,68 +16,48 @@ const prepareRequestBody = (body: BodyInit | null | undefined, convertToJson = t
         ? JSON.stringify(body)
         : body;
 
-
 //export type ApiEndpointClientConfig = ((config: HttpClientConfiguration) => HttpClientConfiguration);
 export type ApiEndpointClientConfig = ((config: HttpClientConfiguration) => void);
 
 export class ApiEndpoint {
     public readonly client: IHttpClient;
-    public parser?: ResponseType<unknown>;
 
     public convertToJson = true;
 
     constructor(
         readonly container: IContainer,
         config: ApiEndpointClientConfig,
-        parser: ResponseParser<unknown> = 'json'
+        private defaultStreamParser: StreamParser<any> = 'text'
     ) {
         this.client = this.container.get(newInstanceOf(IHttpClient));
         this.client?.configure(config);
-        this.setParser(parser);
     }
 
-    public setParser(parser: ResponseParser<unknown>) {
-        this.parser = this.findParser(parser);
+    public get<T>(resource: string, options?: IApiRequestOptions<T>) {
+        return this.request<T>('GET', resource, options);
+    }
+    public post<T>(resource: string, body: RequestBody, options?: IApiRequestOptions<T>) {
+        (options as IApiFullRequestOptions<T>).body = prepareRequestBody(body, this.convertToJson);
+        return this.request<T>('POST', resource, options);
+    }
+    public patch<T>(resource: string, body: RequestBody, options?: IApiRequestOptions<T>) {
+        (options as IApiFullRequestOptions<T>).body = prepareRequestBody(body, this.convertToJson);
+        return this.request<T>('PATCH', resource, options);
+    }
+    public put<T>(resource: string, body: RequestBody, options?: IApiRequestOptions<T>) {
+        (options as IApiFullRequestOptions<T>).body = prepareRequestBody(body, this.convertToJson);
+        return this.request<T>('PUT', resource, options);
+    }
+    public delete<T>(resource: string, options?: IApiRequestOptions<T>) {
+        return this.request<T>('DELETE', resource, options);
     }
 
-    public get<T>(resource: string, options?: IApiRequestOptions<T>): Promise<T> {
-        return this.request<T>('GET', resource, options) as Promise<T>;
-    }
-    public post<T>(resource: string, body: RequestBody, options?: IApiRequestOptions<T>): Promise<T> {
-        (options as IApiFullRequestOptions<T>).body = prepareRequestBody(body, this.convertToJson);
-        return this.request<T>('POST', resource, options) as Promise<T>;
-    }
-    public patch<T>(resource: string, body: RequestBody, options?: IApiRequestOptions<T>): Promise<T> {
-        (options as IApiFullRequestOptions<T>).body = prepareRequestBody(body, this.convertToJson);
-        return this.request<T>('PATCH', resource, options) as Promise<T>;
-    }
-    public put<T>(resource: string, body: RequestBody, options?: IApiRequestOptions<T>): Promise<T> {
-        (options as IApiFullRequestOptions<T>).body = prepareRequestBody(body, this.convertToJson);
-        return this.request<T>('PUT', resource, options) as Promise<T>;
-    }
-    public delete<T>(resource: string, options?: IApiRequestOptions<T>): Promise<T> {
-        return this.request<T>('DELETE', resource, options) as Promise<T>;
-    }
-
-    private async request<T>(method: HttpMethods, resource: string, options?: IApiFullRequestOptions<T>): Promise<T | Response> {
+    public request<T>(method: HttpMethods, resource: string, options?: IApiFullRequestOptions<T>): ApiResponse<T> {
         const requestData = this.buildRequest(method, resource, options);
         if (options?.beforeSend) { options.beforeSend(requestData); }
-        const request = this.client.fetch(requestData.resource, requestData.request);
+        const responseTask = this.client.fetch(requestData.resource, requestData.request);
 
-        const response = await request;
-
-        const onStreamChunck = options?.stream?.onChunk;
-        if (onStreamChunck) {
-            const streamParser = options?.stream?.parser ?? streamParsers.default;
-            await streamParser(response, onStreamChunck);
-        }
-
-        const responseParser = this.findParser<T>(options?.responseParser);
-        if (!responseParser) {
-            return response;
-        }
-
-        return responseParser!(response);
+        return new ApiResponse<T>(requestData, responseTask, options?.streamParser ?? this.defaultStreamParser);
     }
 
     private buildRequest<T>(method: HttpMethods, resource: string, options?: IApiRequestOptions<T>): IApiRequestData {
@@ -86,22 +70,81 @@ export class ApiEndpoint {
         } as IApiRequestData;
     }
 
-    private findParser<T>(override?: ResponseParser<T>): ResponseType<T> | undefined {
-        const parseReturn = override ?? this.parser;
-        let parser: ResponseType<T> | undefined;
-        if (parseReturn) {
-            const type = typeof parseReturn;
-            if (type === 'function') {
-                parser = parseReturn as ResponseType<T>;
-            }
-            else if (typeof parseReturn === 'string') {
-                parser = responseParsers[parseReturn] as ResponseType<T> | undefined;
-            }
-        }
-
-        return parser;
-    }
-
     dispose = () => this.client?.dispose();
 }
 
+//interface
+
+class ApiResponse<T> {
+    constructor(
+        public readonly request: IApiRequestData,
+        private readonly responsePromise: Promise<Response>,
+        private readonly streamParser: StreamParser<T>
+    ) { }
+
+    private response: Response;
+
+    // Utility method to ensure response is resolved before accessing properties
+    public async getHttpResponse(): Promise<Response> {
+        if (!this.response) { this.response = await this.responsePromise; }
+        return this.response;
+    }
+
+    public async stream(onChunk: (chunk: T) => void, sp: StreamParser<T> = null): Promise<void> {
+        const response = await this.getHttpResponse();
+
+        sp = sp ?? this.streamParser;
+        const streamParser = typeof sp === 'string' ? streamParsers[sp] : sp;
+
+        await streamParser(response, onChunk);
+    }
+
+    public async json(): Promise<T> {
+        const response = await this.getHttpResponse();
+        return response.json() as Promise<T>;
+    }
+
+    public async text(): Promise<string> {
+        const response = await this.getHttpResponse();
+        return response.text();
+    }
+
+    public async blob(): Promise<Blob> {
+        const response = await this.getHttpResponse();
+        return response.blob();
+    }
+
+    public async clone(): Promise<ApiResponse<T>> {
+        const response = await this.getHttpResponse();
+        return new ApiResponse<T>(
+            this.request,
+            Promise.resolve(response.clone()),
+            this.streamParser
+        );
+    }
+
+    public async ok(): Promise<boolean> {
+        const response = await this.getHttpResponse();
+        return response.ok;
+    }
+
+    public async status(): Promise<number> {
+        const response = await this.getHttpResponse();
+        return response.status;
+    }
+
+    public async statusText(): Promise<string> {
+        const response = await this.getHttpResponse();
+        return response.statusText;
+    }
+
+    public async headers(): Promise<Headers> {
+        const response = await this.getHttpResponse();
+        return response.headers;
+    }
+
+    public async url(): Promise<string> {
+        const response = await this.getHttpResponse();
+        return response.url;
+    }
+}

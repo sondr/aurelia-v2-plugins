@@ -50,4 +50,6 @@ export const streamParsers = {
         });
     }
 };
+export const parserKeys = Object.keys(streamParsers);
+//export type parserConfig = () => void;
 //# sourceMappingURL=stream-parsers.js.map

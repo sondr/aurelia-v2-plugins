@@ -22,11 +22,11 @@ export class ApiService {
         return this.getEndpoint(empty);
     }
     ;
-    registerEndpoint(name, clientConfig, parser) {
+    registerEndpoint(name, clientConfig, defaultStreamParser) {
         if (this.exists(name)) {
             throw new Error(`Endpoint ${name} already exists`);
         }
-        this.endpoints[name] = new ApiEndpoint(this.container, clientConfig, parser);
+        this.endpoints[name] = new ApiEndpoint(this.container, clientConfig);
         return this;
     }
     removeEndpoint(name) {

@@ -19,7 +19,7 @@ const processTextStream = async (
         const decoder = new TextDecoder('utf-8');
         const text = decoder.decode(value, { stream: true });
         let buffer = text;
-        
+
         let newlineIndex;
         while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
             const chunk = buffer.slice(0, newlineIndex).trim();
@@ -36,11 +36,11 @@ const processTextStream = async (
     });
 };
 
-export type StreamParser<T> = (response: Response, onStreamChunk: (chunk: T) => void) => Promise<void>;
+export type StreamParserType<T> = (response: Response, onStreamChunk: (chunk: T) => void) => Promise<void>;
 export interface IStreamParsers {
-    default: StreamParser<unknown>;
-    text: StreamParser<string>;
-    json: StreamParser<object>;
+    default: StreamParserType<unknown>;
+    text: StreamParserType<string>;
+    json: StreamParserType<object>;
 }
 export const streamParsers: IStreamParsers = {
     default: defaultOnChunk,
@@ -61,3 +61,8 @@ export const streamParsers: IStreamParsers = {
         });
     }
 };
+
+export const parserKeys = Object.keys(streamParsers);
+export type StreamParser<T> = (keyof typeof streamParsers) | undefined | StreamParserType<T>;
+
+//export type parserConfig = () => void;

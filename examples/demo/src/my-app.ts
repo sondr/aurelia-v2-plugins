@@ -23,27 +23,27 @@ import { EndPoints } from './main';
 export class MyApp {
   private readonly githubApi = resolve(IApiContainer).getEndpoint(EndPoints.github);
   private readonly mapApi = resolve(IApiContainer).getEndpoint(EndPoints.counties);
+  private readonly defaultApi = resolve(IApiContainer).getEmptyEndpoint();
 
   async fetch() {
     console.log("find data");
     console.log("shoudl get data from api");
-    // console.log(this.apiContainer);
 
+    // console.log(this.apiContainer);
     // const ghEndpoint = this.apiContainer.getEndpoint(EndPoints.github);
     // const mapEndpoint = this.apiContainer.getEndpoint(EndPoints.counties);
+    //this.mapApi.get('',);
 
-    this.mapApi.get('', {
-      stream: {
-        parser: streamParses.default,
-        onChunk: (chunk) => {
-          console.log(chunk);
-        }
-      }
-    });
+    let data = "";
+    await this.defaultApi.get('https://public.bkhengeren.no/api/v2/product/slug/pl-0720t').stream(chunk => data += chunk, streamParses.text);
+    console.log(data);
+    console.log(JSON.parse(data));
 
-    const users = await this.githubApi.get('/users/aurelia');
-    const counties = await this.mapApi.get('/fylkerkommuner');
+    //const testEmpty = await this.defaultApi.get('https://public.bkhengeren.no/api/v2/product/slug/pl-0720t').json();
+    const users = await this.githubApi.get('/users/aurelia').json();
+    const counties = await this.mapApi.get('/fylkerkommuner').json();
 
+    //console.log(testEmpty);
 
     console.log(users);
     console.log(counties);
