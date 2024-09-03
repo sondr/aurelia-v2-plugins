@@ -1,5 +1,6 @@
 import { DI } from "@aurelia/kernel";
 import { ApiEndpoint } from "./api-endpoint";
+const empty = 'empty-json';
 export const IApiService = DI.createInterface(x => x.singleton(ApiService));
 export class ApiService {
     constructor() {
@@ -14,6 +15,13 @@ export class ApiService {
     getEndpoint(name) {
         return this.endpoints[name ?? this.defaultEndpoint];
     }
+    getEmptyEndpoint() {
+        if (!this.exists(empty)) {
+            this.registerEndpoint(empty, config => config, 'json');
+        }
+        return this.getEndpoint(empty);
+    }
+    ;
     registerEndpoint(name, clientConfig, parser) {
         if (this.exists(name)) {
             throw new Error(`Endpoint ${name} already exists`);

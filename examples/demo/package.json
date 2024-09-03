@@ -8,7 +8,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "aurelia2-simple-api": "0.0.2"
+    "aurelia2-simple-api": "0.0.3"
   },
   "devDependencies": {
     "@aurelia/testing": "2.0.0-beta.21",

@@ -9,6 +9,7 @@ export declare class ApiService {
     setContainer(container: IContainer): void;
     getEndpointNames(): string[];
     getEndpoint(name?: string): ApiEndpoint;
+    getEmptyEndpoint(): ApiEndpoint;
     registerEndpoint(name: string, clientConfig: ApiEndpointClientConfig, parser?: ResponseParser<unknown>): this;
     removeEndpoint(name: string): this;
     exists(name: string): boolean;
