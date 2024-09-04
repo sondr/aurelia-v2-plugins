@@ -2,15 +2,10 @@ import { newInstanceOf, IContainer } from '@aurelia/kernel';
 import { HttpClientConfiguration, IHttpClient } from '@aurelia/fetch-client';
 import { IRestFetchOptions as IApiRequestOptions, HttpMethods, IRestRequestData as IApiRequestData, IRestFetchRequestOptions as IApiFullRequestOptions, RequestBody } from './interfaces';
 import { buildUrl } from './utilities';
-import { StreamParser, StreamParserType, streamParsers } from './parsers/stream-parsers';
+import { StreamParser, streamParsers } from './parsers/stream-parsers';
 
 
-const findStreamParser = <T>(sp: StreamParser<T> = null) => {
-
-};
-
-
-const prepareRequestBody = (body: BodyInit | null | undefined, convertToJson = true) =>
+const prepareRequestBody = (body: RequestBody, convertToJson = true) =>
     (convertToJson && body && typeof body === 'object' && !(body instanceof FormData) && !(body instanceof URLSearchParams)
         && !(body instanceof Blob) && !(body instanceof ArrayBuffer) && !(body instanceof ReadableStream))
         ? JSON.stringify(body)

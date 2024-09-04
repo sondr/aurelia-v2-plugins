@@ -2,8 +2,6 @@ import { newInstanceOf } from '@aurelia/kernel';
 import { IHttpClient } from '@aurelia/fetch-client';
 import { buildUrl } from './utilities';
 import { streamParsers } from './parsers/stream-parsers';
-const findStreamParser = (sp = null) => {
-};
 const prepareRequestBody = (body, convertToJson = true) => (convertToJson && body && typeof body === 'object' && !(body instanceof FormData) && !(body instanceof URLSearchParams)
     && !(body instanceof Blob) && !(body instanceof ArrayBuffer) && !(body instanceof ReadableStream))
     ? JSON.stringify(body)
